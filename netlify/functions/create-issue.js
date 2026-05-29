@@ -40,19 +40,13 @@ exports.handler = async (event) => {
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
-    // Search assignee — try multiple queries to cover different name formats
-    let assignee = null;
-    for (const query of ['Maxence', '楊竣安', 'Maxence_Yang']) {
-      const userRes = await fetch(`${JIRA_URL}/rest/api/3/user/search?query=${encodeURIComponent(query)}&maxResults=10`, { headers });
-      const users = await userRes.json();
-      assignee = Array.isArray(users) && users.find(u =>
-        (u.displayName && (u.displayName.includes('楊竣安') || u.displayName.toLowerCase().includes('maxence')))
-      );
-      if (assignee) break;
-    }
+    // Search assignee by email
+    const userRes = await fetch(`${JIRA_URL}/rest/api/3/user/search?query=maxence_yang%40cmoney.com.tw&maxResults=5`, { headers });
+    const users = await userRes.json();
+    const assignee = Array.isArray(users) && users[0];
 
     if (!assignee) {
-      return { statusCode: 400, body: JSON.stringify({ error: '找不到受託人，請確認 Jira 上 Maxence Yang 的帳號存在' }) };
+      return { statusCode: 400, body: JSON.stringify({ error: '找不到受託人 maxence_yang@cmoney.com.tw' }) };
     }
 
     // Create issue
