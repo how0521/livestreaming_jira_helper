@@ -30,7 +30,7 @@
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
     .card-icon {
@@ -55,92 +55,19 @@
 
     .card-subtitle { font-size: 12px; color: #6b778c; margin-top: 2px; }
 
-    /* ---- Credentials Panel ---- */
-    .cred-panel {
-      background: #f8f9ff;
-      border: 1.5px solid #e0e7ff;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-
-    .cred-toggle {
-      width: 100%;
-      background: none;
-      border: none;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 700;
-      color: #3d4f7c;
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-      user-select: none;
-    }
-
-    .cred-toggle:hover { background: #eef1ff; }
-
-    .cred-toggle-right {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 400;
-      text-transform: none;
-      letter-spacing: 0;
-    }
-
-    .cred-saved-badge {
-      background: #e3fcef;
-      color: #006644;
-      border-radius: 20px;
-      padding: 1px 8px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .cred-arrow {
-      font-size: 10px;
-      transition: transform 0.2s;
-      color: #6b778c;
-    }
-
-    .cred-arrow.open { transform: rotate(180deg); }
-
-    .cred-body {
-      padding: 0 14px 14px;
-      display: none;
-    }
-
-    .cred-body.open { display: block; }
-
-    .cred-note {
-      font-size: 11px;
-      color: #6b778c;
-      margin-bottom: 12px;
-      line-height: 1.5;
-    }
-
-    .cred-note a { color: #0052cc; }
-
-    /* ---- Fields ---- */
-    .field { margin-bottom: 14px; }
+    .field { margin-bottom: 18px; }
 
     label {
       display: block;
       font-size: 12px;
       font-weight: 700;
       color: #172b4d;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       letter-spacing: 0.03em;
       text-transform: uppercase;
     }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="password"] {
+    input[type="text"] {
       width: 100%;
       padding: 9px 12px;
       border: 2px solid #dfe1e6;
@@ -152,36 +79,13 @@
       background: #fafbfc;
     }
 
-    input:focus {
+    input[type="text"]:focus {
       border-color: #0052cc;
       background: #fff;
       box-shadow: 0 0 0 2px rgba(0,82,204,0.16);
     }
 
     input.error { border-color: #de350b; }
-
-    .btn-save-cred {
-      width: 100%;
-      padding: 8px;
-      background: #0052cc;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 4px;
-      transition: background 0.15s;
-    }
-
-    .btn-save-cred:hover { background: #0065ff; }
-
-    /* ---- Main form fields ---- */
-    .divider {
-      height: 1px;
-      background: #f0f1f3;
-      margin: 16px 0;
-    }
 
     .member-list { display: flex; flex-direction: column; gap: 8px; }
 
@@ -223,6 +127,12 @@
     }
 
     .btn-add-member:hover { text-decoration: underline; }
+
+    .divider {
+      height: 1px;
+      background: #f0f1f3;
+      margin: 16px 0;
+    }
 
     .btn-submit {
       width: 100%;
@@ -289,29 +199,6 @@
     </div>
   </div>
 
-  <!-- Credentials Panel -->
-  <div class="cred-panel">
-    <button class="cred-toggle" type="button" onclick="toggleCred()">
-      <span>Jira 連線設定</span>
-      <span class="cred-toggle-right">
-        <span class="cred-saved-badge" id="cred-badge" style="display:none">已儲存</span>
-        <span class="cred-arrow" id="cred-arrow">▼</span>
-      </span>
-    </button>
-    <div class="cred-body" id="cred-body">
-      <p class="cred-note">
-        只需設定一次，儲存後瀏覽器會記住，不用再填。<br>
-        API Token 可至 <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" rel="noopener">Atlassian 帳戶設定</a> → Create API token 產生。
-      </p>
-      <div class="field">
-        <label for="cred-token">API Token</label>
-        <input type="password" id="cred-token" placeholder="貼上你的 API Token">
-      </div>
-      <button class="btn-save-cred" type="button" onclick="saveCredentials()">儲存</button>
-    </div>
-  </div>
-
-  <!-- Main Form -->
   <div class="field">
     <label for="appid">App ID</label>
     <input type="text" id="appid" placeholder="請輸入數字" inputmode="numeric">
@@ -338,52 +225,6 @@
 </div>
 
 <script>
-  const JIRA_URL = 'https://cmoney.atlassian.net';
-  const PROJECT_KEY = 'AUTHOR';
-  const DEFAULT_EMAIL = 'howard517519@gmail.com';
-
-  // ---- Credentials ----
-  function loadCredentials() {
-    return {
-      email: DEFAULT_EMAIL,
-      token: localStorage.getItem('jira_token') || '',
-    };
-  }
-
-  function saveCredentials() {
-    const token = document.getElementById('cred-token').value.trim();
-    if (!token) { alert('請貼上 API Token'); return; }
-    localStorage.setItem('jira_token', token);
-    updateCredBadge(true);
-    toggleCred(false);
-  }
-
-  function updateCredBadge(saved) {
-    document.getElementById('cred-badge').style.display = saved ? 'inline' : 'none';
-  }
-
-  let credOpen = false;
-
-  function toggleCred(forceOpen) {
-    credOpen = forceOpen !== undefined ? forceOpen : !credOpen;
-    document.getElementById('cred-body').className = 'cred-body' + (credOpen ? ' open' : '');
-    document.getElementById('cred-arrow').className = 'cred-arrow' + (credOpen ? ' open' : '');
-  }
-
-  function initCredPanel() {
-    const { token } = loadCredentials();
-    if (token) document.getElementById('cred-token').value = token;
-    updateCredBadge(!!token);
-    if (!token) toggleCred(true);
-  }
-
-  function getAuthHeader() {
-    const { email, token } = loadCredentials();
-    if (!email || !token) return null;
-    return 'Basic ' + btoa(unescape(encodeURIComponent(email + ':' + token)));
-  }
-
-  // ---- Member rows ----
   function addMember() {
     const list = document.getElementById('member-list');
     const row = document.createElement('div');
@@ -396,7 +237,6 @@
     row.querySelector('input').focus();
   }
 
-  // ---- Status ----
   function setStatus(type, html, step) {
     const el = document.getElementById('status');
     el.className = 'status show ' + type;
@@ -415,31 +255,6 @@
     document.getElementById('submit-label').textContent = on ? '建立中...' : '建立 Jira 任務';
   }
 
-  // ---- Jira API ----
-  async function jiraFetch(method, path, body) {
-    const auth = getAuthHeader();
-    if (!auth) throw new Error('尚未設定 Jira 連線，請展開上方「Jira 連線設定」填入 Email 和 API Token');
-
-    const opts = {
-      method,
-      headers: { 'Authorization': auth, 'Accept': 'application/json', 'Content-Type': 'application/json' },
-    };
-    if (body) opts.body = JSON.stringify(body);
-
-    const res = await fetch(JIRA_URL + '/rest/api/3' + path, opts);
-    if (!res.ok) {
-      let msg = 'HTTP ' + res.status;
-      try {
-        const err = await res.json();
-        if (err.errorMessages && err.errorMessages.length) msg = err.errorMessages.join('; ');
-        else if (err.errors) msg = Object.values(err.errors).join('; ');
-      } catch (_) {}
-      throw new Error(msg);
-    }
-    return res.json();
-  }
-
-  // ---- Submit ----
   async function submitForm() {
     clearStatus();
 
@@ -471,46 +286,25 @@
     }
 
     setLoading(true);
+    setStatus('loading', '建立中...', '正在呼叫 Jira');
 
     try {
-      setStatus('loading', '連線中...', '取得專案 components');
-      const project = await jiraFetch('GET', '/project/' + PROJECT_KEY);
-      const components = project.components || [];
-      const compIds = [];
-      const backComp = components.find(c => c.name.toLowerCase() === 'back-end');
-      const overseasComp = components.find(c => c.name.toLowerCase() === 'overseas');
-      if (backComp) compIds.push({ id: backComp.id });
-      if (overseasComp) compIds.push({ id: overseasComp.id });
-
-      setStatus('loading', '連線中...', '搜尋受託人帳號');
-      const users = await jiraFetch('GET', '/user/search?query=Maxence_Yang&maxResults=10');
-      const assignee = users.find(u =>
-        (u.displayName && u.displayName.includes('楊竣安')) ||
-        (u.displayName && u.displayName.toLowerCase().includes('maxence'))
-      ) || users[0];
-      if (!assignee) throw new Error('找不到受託人 Maxence_Yang，請確認 Jira 帳號名稱');
-
-      setStatus('loading', '連線中...', '建立 Jira 任務');
-      const result = await jiraFetch('POST', '/issue', {
-        fields: {
-          project: { key: PROJECT_KEY },
-          summary: '【' + appid + '】影音直播admin全線開通',
-          issuetype: { name: 'Task' },
-          assignee: { accountId: assignee.accountId },
-          components: compIds,
-          description: {
-            type: 'doc',
-            version: 1,
-            content: [
-              { type: 'paragraph', content: [{ type: 'text', text: 'AppID：' + appid }] },
-              { type: 'paragraph', content: [{ type: 'text', text: 'Member ID：' + memberIds.join('、') }] },
-            ]
-          }
-        }
+      const res = await fetch('/.netlify/functions/create-issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appid, memberIds }),
       });
 
-      const issueUrl = JIRA_URL + '/browse/' + result.key;
-      setStatus('success', '✓ 任務建立成功！<br><a href="' + issueUrl + '" target="_blank" rel="noopener">' + result.key + ' — 點此在 Jira 開啟 ↗</a>');
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'HTTP ' + res.status);
+      }
+
+      setStatus(
+        'success',
+        '✓ 任務建立成功！<br><a href="' + data.url + '" target="_blank" rel="noopener">' + data.key + ' — 點此在 Jira 開啟 ↗</a>'
+      );
     } catch (err) {
       setStatus('error', '建立失敗：' + err.message);
     } finally {
@@ -518,21 +312,17 @@
     }
   }
 
-  // Block non-numeric input
   document.addEventListener('input', function(e) {
     if (e.target.id === 'appid' || e.target.classList.contains('member-input')) {
       e.target.value = e.target.value.replace(/\D/g, '');
     }
   });
 
-  // Enter to submit
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter' && !document.getElementById('submit-btn').disabled) {
       submitForm();
     }
   });
-
-  initCredPanel();
 </script>
 </body>
 </html>
