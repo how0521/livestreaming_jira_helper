@@ -40,13 +40,13 @@ exports.handler = async (event) => {
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
-    // DEBUG: return raw search results to find correct accountId
-    const userRes = await fetch(`${JIRA_URL}/rest/api/3/user/picker?query=maxence&maxResults=10`, { headers });
-    const userPicker = await userRes.json();
+    // DEBUG: get assignee accountId from a known issue
+    const issueRes2 = await fetch(`${JIRA_URL}/rest/api/3/issue/AUTHOR-27510?fields=assignee`, { headers });
+    const issueData = await issueRes2.json();
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ debug: userPicker }),
+      body: JSON.stringify({ debug: issueData.fields?.assignee }),
     };
 
     // Create issue
