@@ -300,18 +300,14 @@
     </button>
     <div class="cred-body" id="cred-body">
       <p class="cred-note">
-        輸入後僅儲存於本機瀏覽器 localStorage，不會上傳。<br>
-        API Token 可至 <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" rel="noopener">Atlassian 帳戶設定</a> 產生。
+        只需設定一次，儲存後瀏覽器會記住，不用再填。<br>
+        API Token 可至 <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" rel="noopener">Atlassian 帳戶設定</a> → Create API token 產生。
       </p>
       <div class="field">
-        <label for="cred-email">Jira Email</label>
-        <input type="email" id="cred-email" placeholder="your@email.com">
-      </div>
-      <div class="field">
         <label for="cred-token">API Token</label>
-        <input type="password" id="cred-token" placeholder="ATATT3x...">
+        <input type="password" id="cred-token" placeholder="貼上你的 API Token">
       </div>
-      <button class="btn-save-cred" type="button" onclick="saveCredentials()">儲存設定</button>
+      <button class="btn-save-cred" type="button" onclick="saveCredentials()">儲存</button>
     </div>
   </div>
 
@@ -344,20 +340,19 @@
 <script>
   const JIRA_URL = 'https://cmoney.atlassian.net';
   const PROJECT_KEY = 'AUTHOR';
+  const DEFAULT_EMAIL = 'howard517519@gmail.com';
 
   // ---- Credentials ----
   function loadCredentials() {
     return {
-      email: localStorage.getItem('jira_email') || '',
+      email: DEFAULT_EMAIL,
       token: localStorage.getItem('jira_token') || '',
     };
   }
 
   function saveCredentials() {
-    const email = document.getElementById('cred-email').value.trim();
     const token = document.getElementById('cred-token').value.trim();
-    if (!email || !token) { alert('Email 和 API Token 都必須填寫'); return; }
-    localStorage.setItem('jira_email', email);
+    if (!token) { alert('請貼上 API Token'); return; }
     localStorage.setItem('jira_token', token);
     updateCredBadge(true);
     toggleCred(false);
@@ -376,12 +371,10 @@
   }
 
   function initCredPanel() {
-    const { email, token } = loadCredentials();
-    if (email) document.getElementById('cred-email').value = email;
+    const { token } = loadCredentials();
     if (token) document.getElementById('cred-token').value = token;
-    const hasCred = !!(email && token);
-    updateCredBadge(hasCred);
-    if (!hasCred) toggleCred(true);
+    updateCredBadge(!!token);
+    if (!token) toggleCred(true);
   }
 
   function getAuthHeader() {
