@@ -40,14 +40,14 @@ exports.handler = async (event) => {
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
-    // Search assignee by email
-    const userRes = await fetch(`${JIRA_URL}/rest/api/3/user/search?query=maxence_yang%40cmoney.com.tw&maxResults=5`, { headers });
-    const users = await userRes.json();
-    const assignee = Array.isArray(users) && users[0];
-
-    if (!assignee) {
-      return { statusCode: 400, body: JSON.stringify({ error: '找不到受託人 maxence_yang@cmoney.com.tw' }) };
-    }
+    // DEBUG: return raw search results to find correct accountId
+    const userRes = await fetch(`${JIRA_URL}/rest/api/3/user/picker?query=maxence&maxResults=10`, { headers });
+    const userPicker = await userRes.json();
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ debug: userPicker }),
+    };
 
     // Create issue
     const issueRes = await fetch(`${JIRA_URL}/rest/api/3/issue`, {
