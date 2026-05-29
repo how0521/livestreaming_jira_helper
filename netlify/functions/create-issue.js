@@ -40,13 +40,13 @@ exports.handler = async (event) => {
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
-    // DEBUG: list accessible projects
-    const projRes = await fetch(`${JIRA_URL}/rest/api/3/project/search?maxResults=50`, { headers });
-    const projData = await projRes.json();
+    // DEBUG: check which account this token belongs to
+    const myselfRes = await fetch(`${JIRA_URL}/rest/api/3/myself`, { headers });
+    const myself = await myselfRes.json();
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ projects: (projData.values || []).map(p => ({ key: p.key, name: p.name })) }),
+      body: JSON.stringify({ accountId: myself.accountId, email: myself.emailAddress, name: myself.displayName }),
     };
 
     // Create issue
