@@ -40,7 +40,14 @@ exports.handler = async (event) => {
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
-    const assignee = { accountId: '712020:9a5910b1-11aa-4ea1-babd-dadf61969e91' };
+    // DEBUG: list accessible projects
+    const projRes = await fetch(`${JIRA_URL}/rest/api/3/project/search?maxResults=50`, { headers });
+    const projData = await projRes.json();
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projects: (projData.values || []).map(p => ({ key: p.key, name: p.name })) }),
+    };
 
     // Create issue
     const issueRes = await fetch(`${JIRA_URL}/rest/api/3/issue`, {
