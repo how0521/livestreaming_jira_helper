@@ -40,16 +40,19 @@ exports.handler = async (event) => {
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
-    // Search assignee
-    const userRes = await fetch(`${JIRA_URL}/rest/api/3/user/search?query=Maxence_Yang&maxResults=10`, { headers });
-    const users = await userRes.json();
-    const assignee = users.find(u =>
-      (u.displayName && u.displayName.includes('楊竣安')) ||
-      (u.displayName && u.displayName.toLowerCase().includes('maxence'))
-    ) || users[0];
+    // Search assignee — try multiple queries to cover different name formats
+    let assignee = null;
+    for (const query of ['Maxence', '楊竣安', 'Maxence_Yang']) {
+      const userRes = await fetch(`${JIRA_URL}/rest/api/3/user/search?query=${encodeURIComponent(query)}&maxResults=10`, { headers });
+      const users = await userRes.json();
+      assignee = Array.isArray(users) && users.find(u =>
+        (u.displayName && (u.displayName.includes('楊竣安') || u.displayName.toLowerCase().includes('maxence')))
+      );
+      if (assignee) break;
+    }
 
     if (!assignee) {
-      return { statusCode: 400, body: JSON.stringify({ error: '找不到受託人 Maxence_Yang' }) };
+      return { statusCode: 400, body: JSON.stringify({ error: '找不到受託人，請確認 Jira 上 Maxence Yang 的帳號存在' }) };
     }
 
     // Create issue
