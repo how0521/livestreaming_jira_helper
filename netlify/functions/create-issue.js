@@ -40,14 +40,7 @@ exports.handler = async (event) => {
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
-    // DEBUG: search assignable users in AUTHOR project
-    const userRes = await fetch(`${JIRA_URL}/rest/api/3/user/assignable/search?project=AUTHOR&query=maxence&maxResults=10`, { headers });
-    const users = await userRes.json();
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ debug: users }),
-    };
+    const assignee = { accountId: '712020:9a5910b1-11aa-4ea1-babd-dadf61969e91' };
 
     // Create issue
     const issueRes = await fetch(`${JIRA_URL}/rest/api/3/issue`, {
