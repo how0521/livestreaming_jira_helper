@@ -49,7 +49,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({
         fields: {
           project: { key: PROJECT_KEY },
-          summary: `【${appid}】影音直播admin全線開通`,
+          summary: `【${appid}】影音直播admin權限開通`,
           issuetype: { name: 'Task' },
           assignee: { accountId: assignee.accountId },
           components: compIds,
