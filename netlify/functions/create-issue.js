@@ -15,9 +15,9 @@ exports.handler = async (event) => {
     };
   }
 
-  let appid, memberIds;
+  let appid, env, memberIds;
   try {
-    ({ appid, memberIds } = JSON.parse(event.body));
+    ({ appid, env, memberIds } = JSON.parse(event.body));
   } catch {
     return { statusCode: 400, body: JSON.stringify({ error: '請求格式錯誤' }) };
   }
@@ -58,6 +58,7 @@ exports.handler = async (event) => {
             version: 1,
             content: [
               { type: 'paragraph', content: [{ type: 'text', text: `AppID：${appid}` }] },
+              { type: 'paragraph', content: [{ type: 'text', text: `環境：${env}` }] },
               { type: 'paragraph', content: [{ type: 'text', text: `Member ID：${memberIds.join('、')}` }] },
             ],
           },
