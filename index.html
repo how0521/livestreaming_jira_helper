@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>影音直播 admin 權限開通小幫手</title>
+  <title>影音/語音直播 admin 權限開通小幫手</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -222,7 +222,7 @@
       </svg>
     </div>
     <div>
-      <div class="card-title">影音直播 admin 權限開通小幫手</div>
+      <div class="card-title">影音/語音直播 admin 權限開通小幫手</div>
       <div class="card-subtitle">建立任務至 Jira AUTHOR 專案</div>
     </div>
   </div>
@@ -300,9 +300,12 @@
     const appid = appidEl.value.trim();
     const env = document.querySelector('input[name="env"]:checked').value;
     const memberInputs = document.querySelectorAll('.member-input');
-    const memberIds = Array.from(memberInputs).map(i => i.value.trim()).filter(Boolean);
+    const memberValues = Array.from(memberInputs).map(i => i.value.trim());
+    const memberIds = memberValues.filter(Boolean);
 
     appidEl.classList.remove('error');
+    document.querySelectorAll('.member-input').forEach(i => i.classList.remove('error'));
+
     if (!appid) {
       appidEl.classList.add('error');
       setStatus('error', 'App ID 不能為空');
@@ -315,7 +318,16 @@
       return;
     }
     if (memberIds.length === 0) {
+      memberInputs[0].classList.add('error');
       setStatus('error', '至少填一個 Member ID');
+      memberInputs[0].focus();
+      return;
+    }
+    const emptyMember = Array.from(memberInputs).find(i => !i.value.trim());
+    if (emptyMember) {
+      emptyMember.classList.add('error');
+      setStatus('error', '有 Member ID 欄位未填寫，請填寫或移除空白欄位');
+      emptyMember.focus();
       return;
     }
     const badMember = memberIds.find(id => !/^\d+$/.test(id));
