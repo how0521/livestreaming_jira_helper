@@ -243,7 +243,12 @@
   </div>
 
   <div class="field">
-    <label>Member ID</label>
+    <label for="author-memberid">作者的 Member ID <span style="font-weight:400;color:#6b778c;text-transform:none;letter-spacing:0">(首次開啟直播權限需要提供，選填)</span></label>
+    <input type="text" id="author-memberid" placeholder="請輸入數字（選填）" inputmode="numeric">
+  </div>
+
+  <div class="field">
+    <label>Member ID（不包含作者）</label>
     <div class="member-list" id="member-list">
       <div class="member-row">
         <input type="text" placeholder="請輸入數字" inputmode="numeric" class="member-input">
@@ -297,13 +302,16 @@
     clearStatus();
 
     const appidEl = document.getElementById('appid');
+    const authorMemberIdEl = document.getElementById('author-memberid');
     const appid = appidEl.value.trim();
+    const authorMemberId = authorMemberIdEl.value.trim();
     const env = document.querySelector('input[name="env"]:checked').value;
     const memberInputs = document.querySelectorAll('.member-input');
     const memberValues = Array.from(memberInputs).map(i => i.value.trim());
     const memberIds = memberValues.filter(Boolean);
 
     appidEl.classList.remove('error');
+    authorMemberIdEl.classList.remove('error');
     document.querySelectorAll('.member-input').forEach(i => i.classList.remove('error'));
 
     if (!appid) {
@@ -315,6 +323,12 @@
     if (!/^\d+$/.test(appid)) {
       appidEl.classList.add('error');
       setStatus('error', 'App ID 只能填數字');
+      return;
+    }
+    if (authorMemberId && !/^\d+$/.test(authorMemberId)) {
+      authorMemberIdEl.classList.add('error');
+      setStatus('error', '作者的 Member ID 只能填數字');
+      authorMemberIdEl.focus();
       return;
     }
     if (memberIds.length === 0) {
@@ -343,7 +357,7 @@
       const res = await fetch('/.netlify/functions/create-issue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appid, env, memberIds }),
+        body: JSON.stringify({ appid, env, memberIds, authorMemberId: authorMemberId || null }),
       });
 
       const data = await res.json();
@@ -364,7 +378,7 @@
   }
 
   document.addEventListener('input', function(e) {
-    if (e.target.id === 'appid' || e.target.classList.contains('member-input')) {
+    if (e.target.id === 'appid' || e.target.id === 'author-memberid' || e.target.classList.contains('member-input')) {
       e.target.value = e.target.value.replace(/\D/g, '');
     }
   });

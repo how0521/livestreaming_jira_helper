@@ -15,9 +15,9 @@ exports.handler = async (event) => {
     };
   }
 
-  let appid, env, memberIds;
+  let appid, env, memberIds, authorMemberId;
   try {
-    ({ appid, env, memberIds } = JSON.parse(event.body));
+    ({ appid, env, memberIds, authorMemberId } = JSON.parse(event.body));
   } catch {
     return { statusCode: 400, body: JSON.stringify({ error: '請求格式錯誤' }) };
   }
@@ -36,7 +36,7 @@ exports.handler = async (event) => {
     const components = project.components || [];
     const compIds = [];
     const backComp = components.find(c => c.name.toLowerCase() === 'back-end');
-    const overseasComp = components.find(c => c.name.toLowerCase() === 'overseas');
+    const overseasComp = components.find(c => c.name.toLowerCase() === 'oversea');
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
@@ -59,7 +59,8 @@ exports.handler = async (event) => {
             content: [
               { type: 'paragraph', content: [{ type: 'text', text: `AppID：${appid}` }] },
               { type: 'paragraph', content: [{ type: 'text', text: `環境：${env}` }] },
-              { type: 'paragraph', content: [{ type: 'text', text: `Member ID：${memberIds.join('、')}` }] },
+              ...(authorMemberId ? [{ type: 'paragraph', content: [{ type: 'text', text: `作者的 Member ID：${authorMemberId}` }] }] : []),
+              { type: 'paragraph', content: [{ type: 'text', text: `Member ID（不包含作者）：${memberIds.join('、')}` }] },
             ],
           },
         },
