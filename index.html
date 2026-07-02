@@ -228,6 +228,11 @@
   </div>
 
   <div class="field">
+    <label for="applicant">申請人</label>
+    <input type="text" id="applicant" placeholder="請告訴我你是誰">
+  </div>
+
+  <div class="field">
     <label for="appid">App ID</label>
     <input type="text" id="appid" placeholder="請輸入數字" inputmode="numeric">
   </div>
@@ -301,8 +306,10 @@
   async function submitForm() {
     clearStatus();
 
+    const applicantEl = document.getElementById('applicant');
     const appidEl = document.getElementById('appid');
     const authorMemberIdEl = document.getElementById('author-memberid');
+    const applicant = applicantEl.value.trim();
     const appid = appidEl.value.trim();
     const authorMemberId = authorMemberIdEl.value.trim();
     const env = document.querySelector('input[name="env"]:checked').value;
@@ -310,10 +317,17 @@
     const memberValues = Array.from(memberInputs).map(i => i.value.trim());
     const memberIds = memberValues.filter(Boolean);
 
+    applicantEl.classList.remove('error');
     appidEl.classList.remove('error');
     authorMemberIdEl.classList.remove('error');
     document.querySelectorAll('.member-input').forEach(i => i.classList.remove('error'));
 
+    if (!applicant) {
+      applicantEl.classList.add('error');
+      setStatus('error', '申請人不能為空');
+      applicantEl.focus();
+      return;
+    }
     if (!appid) {
       appidEl.classList.add('error');
       setStatus('error', 'App ID 不能為空');
@@ -357,7 +371,7 @@
       const res = await fetch('/.netlify/functions/create-issue', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ appid, env, memberIds, authorMemberId: authorMemberId || null }),
+        body: JSON.stringify({ applicant, appid, env, memberIds, authorMemberId: authorMemberId || null }),
       });
 
       const data = await res.json();

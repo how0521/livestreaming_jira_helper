@@ -15,9 +15,9 @@ exports.handler = async (event) => {
     };
   }
 
-  let appid, env, memberIds, authorMemberId;
+  let applicant, appid, env, memberIds, authorMemberId;
   try {
-    ({ appid, env, memberIds, authorMemberId } = JSON.parse(event.body));
+    ({ applicant, appid, env, memberIds, authorMemberId } = JSON.parse(event.body));
   } catch {
     return { statusCode: 400, body: JSON.stringify({ error: '請求格式錯誤' }) };
   }
@@ -57,6 +57,7 @@ exports.handler = async (event) => {
             type: 'doc',
             version: 1,
             content: [
+              { type: 'paragraph', content: [{ type: 'text', text: `申請人：${applicant}` }] },
               { type: 'paragraph', content: [{ type: 'text', text: `AppID：${appid}` }] },
               { type: 'paragraph', content: [{ type: 'text', text: `環境：${env}` }] },
               ...(authorMemberId ? [{ type: 'paragraph', content: [{ type: 'text', text: `作者的 Member ID：${authorMemberId}` }] }] : []),
