@@ -40,7 +40,7 @@ exports.handler = async (event) => {
     if (backComp) compIds.push({ id: backComp.id });
     if (overseasComp) compIds.push({ id: overseasComp.id });
 
-    const assignee = { accountId: '712020:9a5910b1-11aa-4ea1-babd-dadf61969e91' };
+    const assignee = { accountId: '5d1325e9f46aa30c271c895c' };
 
     // Create issue
     const issueRes = await fetch(`${JIRA_URL}/rest/api/3/issue`, {
